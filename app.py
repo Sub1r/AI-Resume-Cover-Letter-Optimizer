@@ -1,6 +1,7 @@
 import streamlit as st
 from prompts import build_resume_analysis_prompt
 from ai_client import get_ai_response
+from ats_utils import calculate_match_score
 
 st.set_page_config(
     page_title="AI Resume & Cover Letter Optimizer",
@@ -52,6 +53,11 @@ if analyze_button:
     if not resume_text.strip() or not job_description.strip():
         st.warning("Please paste both your resume and the job description.")
     else:
+        ats_score, matched_keywords = calculate_match_score(
+            resume_text,
+            job_description
+        )
+
         prompt = build_resume_analysis_prompt(
             resume_text,
             job_description
@@ -61,6 +67,16 @@ if analyze_button:
             ai_response = get_ai_response(prompt)
 
         st.divider()
+
+        st.subheader("🎯 ATS Keyword Match Score")
+        st.progress(ats_score / 100)
+        st.write(f"**Score:** {ats_score}/100")
+
+        if matched_keywords:
+            st.write("**Matched Keywords:**")
+            st.write(", ".join(matched_keywords[:30]))
+        else:
+            st.write("No strong keyword matches found.")
 
         st.subheader("📊 AI Resume Analysis")
         st.markdown(ai_response)
