@@ -4,6 +4,7 @@ from ai_client import get_ai_response
 from ats_utils import calculate_match_score
 from file_handler import extract_text_from_file
 from response_parser import parse_ai_response
+from ui_components import display_analysis_dashboard
 
 st.set_page_config(
     page_title="AI Resume & Cover Letter Optimizer",
@@ -70,7 +71,7 @@ if analyze_button:
     if not resume_text.strip() or not job_description.strip():
         st.warning("Please paste both your resume and the job description.")
     else:
-        ats_score, matched_keywords = calculate_match_score(
+        ats_score, matched_keywords, missing_keywords = calculate_match_score(
             resume_text,
             job_description
         )
@@ -84,47 +85,9 @@ if analyze_button:
             ai_response = get_ai_response(prompt)
             sections = parse_ai_response(ai_response)
 
-        st.divider()
-
-        st.subheader("📊 Resume Analysis Dashboard")
-
-        score_col, keyword_col = st.columns(2)
-
-        with score_col:
-            st.metric(label="ATS Keyword Match Score", value=f"{ats_score}/100")
-            st.progress(ats_score / 100)
-
-        with keyword_col:
-            st.write("**Top Matched Keywords**")
-
-            if matched_keywords:
-                st.write(", ".join(matched_keywords[:30]))
-            else:
-                st.write("No strong keyword matches found.")
-
-        st.divider()
-
-        with st.expander("📊 Match Score", expanded=True):
-            st.markdown(sections["Match Score"])
-
-        with st.expander("✅ Strong Matches", expanded=True):
-            st.markdown(sections["Strong Matches"])
-
-        with st.expander("⚠️ Missing Skills or Keywords", expanded=True):
-            st.markdown(sections["Missing Skills or Keywords"])
-
-        with st.expander("💡 Resume Improvement Suggestions", expanded=True):
-            st.markdown(sections["Resume Improvement Suggestions"])
-
-        with st.expander("💌 Tailored Cover Letter", expanded=False):
-            st.markdown(sections["Tailored Cover Letter"])
-
-        with st.expander("🎤 Interview Preparation Questions", expanded=False):
-            st.markdown(sections["Interview Preparation Questions"])
-
-        st.download_button(
-            label="⬇️ Download Full Analysis",
-            data=ai_response,
-            file_name="resume_analysis.txt",
-            mime="text/plain"
+        display_analysis_dashboard(
+            ats_score,
+            matched_keywords,
+            sections,
+            ai_response
         )
