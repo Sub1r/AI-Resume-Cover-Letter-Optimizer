@@ -84,21 +84,29 @@ if analyze_button:
 
         st.divider()
 
-        st.subheader("🎯 ATS Keyword Match Score")
-        st.progress(ats_score / 100)
-        st.write(f"**Score:** {ats_score}/100")
+        st.subheader("📊 Resume Analysis Dashboard")
 
-        if matched_keywords:
-            st.write("**Matched Keywords:**")
-            st.write(", ".join(matched_keywords[:30]))
-        else:
-            st.write("No strong keyword matches found.")
+        score_col, keyword_col = st.columns(2)
 
-        st.subheader("📊 AI Resume Analysis")
-        st.markdown(ai_response)
+        with score_col:
+            st.metric(label="ATS Keyword Match Score", value=f"{ats_score}/100")
+            st.progress(ats_score / 100)
+
+        with keyword_col:
+            st.write("**Top Matched Keywords**")
+
+            if matched_keywords:
+                st.write(", ".join(matched_keywords[:30]))
+            else:
+                st.write("No strong keyword matches found.")
+
+        st.divider()
+
+        with st.expander("📋 Full AI Resume Analysis", expanded=True):
+            st.markdown(ai_response)
 
         st.download_button(
-            label="⬇️ Download Analysis",
+            label="⬇️ Download Full Analysis",
             data=ai_response,
             file_name="resume_analysis.txt",
             mime="text/plain"
