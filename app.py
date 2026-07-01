@@ -2,6 +2,7 @@ import streamlit as st
 from prompts import build_resume_analysis_prompt
 from ai_client import get_ai_response
 from ats_utils import calculate_match_score
+from file_handler import extract_text_from_file
 
 st.set_page_config(
     page_title="AI Resume & Cover Letter Optimizer",
@@ -33,11 +34,26 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Your Resume")
-    resume_text = st.text_area(
-        "Paste your resume here",
-        height=350,
-        placeholder="Example: Education, skills, experience, projects..."
+
+    uploaded_resume = st.file_uploader(
+        "Upload your resume",
+        type=["txt", "pdf", "docx"]
     )
+
+    if uploaded_resume is not None:
+        resume_text = extract_text_from_file(uploaded_resume)
+
+        if resume_text.strip():
+            st.success("Resume uploaded and text extracted successfully!")
+        else:
+            st.error("Could not extract text from this file. Try another file or paste the resume manually.")
+            resume_text = ""
+    else:
+        resume_text = st.text_area(
+            "Or paste your resume here",
+            height=350,
+            placeholder="Example: Education, skills, experience, projects..."
+        )
 
 with col2:
     st.subheader("Job Description")
