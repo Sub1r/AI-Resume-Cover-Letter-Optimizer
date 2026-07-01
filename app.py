@@ -3,6 +3,7 @@ from prompts import build_resume_analysis_prompt
 from ai_client import get_ai_response
 from ats_utils import calculate_match_score
 from file_handler import extract_text_from_file
+from response_parser import parse_ai_response
 
 st.set_page_config(
     page_title="AI Resume & Cover Letter Optimizer",
@@ -81,6 +82,7 @@ if analyze_button:
 
         with st.spinner("Analyzing your resume..."):
             ai_response = get_ai_response(prompt)
+            sections = parse_ai_response(ai_response)
 
         st.divider()
 
@@ -102,8 +104,23 @@ if analyze_button:
 
         st.divider()
 
-        with st.expander("📋 Full AI Resume Analysis", expanded=True):
-            st.markdown(ai_response)
+        with st.expander("📊 Match Score", expanded=True):
+            st.markdown(sections["Match Score"])
+
+        with st.expander("✅ Strong Matches", expanded=True):
+            st.markdown(sections["Strong Matches"])
+
+        with st.expander("⚠️ Missing Skills or Keywords", expanded=True):
+            st.markdown(sections["Missing Skills or Keywords"])
+
+        with st.expander("💡 Resume Improvement Suggestions", expanded=True):
+            st.markdown(sections["Resume Improvement Suggestions"])
+
+        with st.expander("💌 Tailored Cover Letter", expanded=False):
+            st.markdown(sections["Tailored Cover Letter"])
+
+        with st.expander("🎤 Interview Preparation Questions", expanded=False):
+            st.markdown(sections["Interview Preparation Questions"])
 
         st.download_button(
             label="⬇️ Download Full Analysis",
