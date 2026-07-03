@@ -108,6 +108,9 @@ button_col1, button_col2, button_col3 = st.columns([1, 1, 1])
 
 with button_col2:
     analyze_button = st.button("✨ Analyze with Local AI", type="primary", use_container_width=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
 st.markdown(
     """
     <div class="feature-grid">
