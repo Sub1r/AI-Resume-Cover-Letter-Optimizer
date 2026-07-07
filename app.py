@@ -143,7 +143,26 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+if not analyze_button:
+    st.info(
+        """
+        ### 📊 Analysis Dashboard
 
+        Your personalized AI resume analysis will appear here after you click **✨ Analyze with Local AI**.
+
+        **You'll receive:**
+
+        ✅ ATS Match Score
+
+        ✅ Missing Skills & Keywords
+
+        ✅ AI Resume Improvement Suggestions
+
+        ✅ Tailored Cover Letter
+
+        ✅ Interview Preparation Questions
+        """
+    )
 if analyze_button:
     if not resume_text.strip() or not job_description.strip():
         st.warning("Please paste both your resume and the job description.")
