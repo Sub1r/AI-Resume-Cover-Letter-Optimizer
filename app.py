@@ -159,8 +159,19 @@ if analyze_button:
         )
 
         with st.spinner("Analyzing your resume..."):
-            ai_response = get_ai_response(prompt)
-            sections = parse_ai_response(ai_response)
+            try:
+                ai_response = get_ai_response(prompt)
+                sections = parse_ai_response(ai_response)
+
+            except Exception:
+                st.error(
+                    "❌ Unable to connect to Ollama.\n\n"
+                    "Please make sure:\n"
+                    "- Ollama is running\n"
+                    "- The Llama 3.2 model is installed\n"
+                    "- The Ollama server is accessible"
+                )
+                st.stop()
 
         display_analysis_dashboard(
             ats_score,
