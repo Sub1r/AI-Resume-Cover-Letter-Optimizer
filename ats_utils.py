@@ -1,13 +1,30 @@
 import re
 from collections import Counter
 
-
 COMMON_WORDS = {
     "the", "and", "or", "to", "of", "in", "for", "with", "a", "an",
     "is", "are", "on", "as", "by", "be", "this", "that", "from",
     "we", "you", "our", "your", "will", "can", "should", "must",
     "candidate", "role", "job", "work", "team", "company", "looking",
     "required", "preferred", "skills", "experience", "ability"
+}
+
+IMPORTANT_SHORT_KEYWORDS = {
+    "ai",
+    "ml",
+    "llm",
+    "nlp",
+    "sql",
+    "aws",
+    "api",
+    "git",
+    "css",
+    "html",
+    "ui",
+    "ux",
+    "etl",
+    "cpu",
+    "gpu"
 }
 
 
@@ -25,7 +42,10 @@ def extract_keywords(text):
     keywords = []
 
     for word in words:
-        if len(word) > 3 and word not in COMMON_WORDS:
+        if (
+            (len(word) > 3 or word in IMPORTANT_SHORT_KEYWORDS)
+            and word not in COMMON_WORDS
+        ):
             keywords.append(word)
 
     return keywords
