@@ -1,5 +1,5 @@
 import streamlit as st
-
+from report_generator import generate_pdf_report
 
 def display_analysis_dashboard(
     ats_score,
@@ -56,9 +56,13 @@ def display_analysis_dashboard(
     with st.expander("🎤 Interview Preparation Questions", expanded=False):
         st.markdown(sections["Interview Preparation Questions"])
 
+    pdf_report = generate_pdf_report(
+        title="AI Resume & Cover Letter Optimizer",
+        content=ai_response
+)
     st.download_button(
-        label="⬇️ Download Full Analysis",
-        data=ai_response,
-        file_name="resume_analysis.txt",
-        mime="text/plain"
-    )
+    label="📄 Download Professional PDF Report",
+    data=pdf_report,
+    file_name="resume_analysis_report.pdf",
+    mime="application/pdf"
+)

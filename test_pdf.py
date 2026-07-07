@@ -1,7 +1,6 @@
 from report_generator import generate_pdf_report
 
-generate_pdf_report(
-    output_path="test_report.pdf",
+pdf_bytes = generate_pdf_report(
     title="Resume Analysis",
     content="""
 This is a test PDF.
@@ -12,5 +11,8 @@ Congratulations!
 Your PDF generator is working.
 """
 )
+
+with open("test_report.pdf", "wb") as file:
+    file.write(pdf_bytes)
 
 print("PDF created successfully!")

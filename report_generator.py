@@ -1,8 +1,8 @@
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
 
-
-def generate_pdf_report(output_path, title, content):
+def generate_pdf_report(title, content):
     """
     Generate a simple PDF report.
 
@@ -18,7 +18,8 @@ def generate_pdf_report(output_path, title, content):
         The main body text of the report.
     """
 
-    document = SimpleDocTemplate(output_path)
+    buffer = BytesIO()
+    document = SimpleDocTemplate(buffer)
     styles = getSampleStyleSheet()
 
     elements = [
@@ -27,3 +28,6 @@ def generate_pdf_report(output_path, title, content):
     ]
 
     document.build(elements)
+    
+    buffer.seek(0)
+    return buffer.getvalue()
