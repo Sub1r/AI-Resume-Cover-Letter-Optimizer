@@ -19,12 +19,12 @@ st.markdown(
     <div class="hero-card">
         <h1><span class="gradient-text">AI Resume</span> & Cover Letter Optimizer</h1>
         <p class="hero-subtitle">
-        Upload your resume, compare it with a job description, get an ATS keyword score,
-        discover missing skills, and generate a tailored cover letter using local AI.
+        Upload your resume, compare it with a job description, receive a personalized Resume Match Score,
+        identify missing skills and keywords, and generate tailored career insights—all powered by local AI.
         </p>
         <div class="pill-row">
             <span class="pill">⚡ Local AI with Ollama</span>
-            <span class="pill">🎯 ATS Keyword Score</span>
+            <span class="pill">🎯 Resume Match Score</span>
             <span class="pill">📄 PDF / DOCX / TXT Upload</span>
             <span class="pill">💌 Cover Letter Generator</span>
         </div>
@@ -38,8 +38,10 @@ with st.sidebar:
     st.write("1. Upload or paste your resume.")
     st.write("2. Paste the job description.")
     st.write("3. Click Analyze with Local AI.")
-    st.write("4. Review your ATS score, missing skills, cover letter, and interview questions.")
-
+    st.write(
+    "4. Review your Resume Match Score, personalized recommendations, "
+    "cover letter, interview questions, and downloadable report."
+    )
     st.divider()
 
     st.header("Project Info")
@@ -72,12 +74,12 @@ with input_col1:
             resume_text = extract_text_from_file(uploaded_resume)
 
             if resume_text.strip():
-                st.success("Resume uploaded and text extracted successfully!")
+                st.success("✅ Resume uploaded successfully.")
             else:
                 st.error(
-                    "Could not extract text from this file. "
-                    "Try another file or paste the resume manually."
-                )
+                    "We couldn't extract text from this file.\n\n"
+                    "Please try another PDF, DOCX, or TXT file, or paste your resume manually."
+    )
                 resume_text = ""
         else:
             resume_text = st.text_area(
@@ -107,7 +109,11 @@ with input_col2:
 button_col1, button_col2, button_col3 = st.columns([1, 1, 1])
 
 with button_col2:
-    analyze_button = st.button("✨ Analyze with Local AI", type="primary", use_container_width=True)
+    analyze_button = st.button(
+        "🚀 Analyze Resume",
+        type="primary",
+        use_container_width=True
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -116,18 +122,24 @@ st.markdown(
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon">📊</div>
-            <div class="feature-title">ATS Score</div>
-            <div class="feature-text">Measure keyword alignment with the job description.</div>
+            <div class="feature-title">Resume Match Score</div>
+            <div class="feature-text">
+            See how closely your resume matches the job description based on relevant skills and keywords.
+            </div>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🔍</div>
-            <div class="feature-title">Missing Skills</div>
-            <div class="feature-text">Find important terms your resume may be missing.</div>
+            <div class="feature-title">Skill Gap Analysis</div>
+            <div class="feature-text">
+            Identify important skills and keywords that are missing from your resume.
+            </div>
         </div>
         <div class="feature-card">
             <div class="feature-icon">💡</div>
-            <div class="feature-title">AI Suggestions</div>
-            <div class="feature-text">Get practical improvement recommendations.</div>
+            <div class="feature-title">Resume Improvements</div>
+            <div class="feature-text">
+            Receive actionable suggestions to strengthen your resume for the selected role.
+            </div>
         </div>
         <div class="feature-card">
             <div class="feature-icon">💌</div>
@@ -148,19 +160,25 @@ if not analyze_button:
         """
         ### 📊 Analysis Dashboard
 
-        Your personalized AI resume analysis will appear here after you click **✨ Analyze with Local AI**.
+        Your personalized AI resume analysis will appear here after you click **🚀 Analyze Resume**.
 
         **You'll receive:**
 
-        ✅ ATS Match Score
+        ✅ Resume Match Score
 
-        ✅ Missing Skills & Keywords
+        📋 Overall Match Summary
 
-        ✅ AI Resume Improvement Suggestions
+        ✅ Matching Skills & Keywords
 
-        ✅ Tailored Cover Letter
+        ⚠️ Missing Skills & Keywords
 
-        ✅ Interview Preparation Questions
+        💡 Personalized Resume Improvements
+
+        💌 Tailored Cover Letter
+
+        🎤 Interview Preparation Questions
+
+        📄 Downloadable PDF Report
         """
     )
 if analyze_button:
@@ -177,7 +195,9 @@ if analyze_button:
             job_description
         )
 
-        with st.spinner("Analyzing your resume..."):
+        with st.spinner(
+             "Analyzing your resume and generating personalized recommendations..."
+       ):
             try:
                 ai_response = get_ai_response(prompt)
                 sections = parse_ai_response(ai_response)
