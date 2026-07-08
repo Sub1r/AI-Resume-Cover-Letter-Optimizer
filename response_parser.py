@@ -8,6 +8,10 @@ def parse_ai_response(ai_response):
         "Interview Preparation Questions": ""
     }
 
+    # Defensive check to prevent errors if the AI response is invalid
+    if not isinstance(ai_response, str):
+        return sections
+
     current_section = None
 
     for line in ai_response.splitlines():

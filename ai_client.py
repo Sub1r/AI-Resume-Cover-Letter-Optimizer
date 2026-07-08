@@ -10,10 +10,28 @@ def get_ai_response(prompt):
         "stream": False
     }
 
-    response = requests.post(url, json=payload)
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=60
+        )
 
-    if response.status_code == 200:
+        if response.status_code != 200:
+            raise RuntimeError(
+                f"Ollama returned status code {response.status_code}."
+            )
+
         data = response.json()
+
+        if "response" not in data:
+            raise RuntimeError(
+                "Invalid response received from Ollama."
+            )
+
         return data["response"]
-    else:
-        return "Error: Could not get response from Ollama."
+
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(
+            "Unable to connect to Ollama."
+        ) from e

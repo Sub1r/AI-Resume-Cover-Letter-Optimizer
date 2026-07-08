@@ -71,15 +71,23 @@ with input_col1:
         )
 
         if uploaded_resume is not None:
-            resume_text = extract_text_from_file(uploaded_resume)
+            try:
+                resume_text = extract_text_from_file(uploaded_resume)
 
-            if resume_text.strip():
-                st.success("✅ Resume uploaded successfully.")
-            else:
+                if resume_text.strip():
+                    st.success("✅ Resume uploaded successfully.")
+                else:
+                    st.error(
+                        "We couldn't extract text from this file.\n\n"
+                        "Please try another PDF, DOCX, or TXT file, or paste your resume manually."
+                    )
+                    resume_text = ""
+
+            except Exception:
                 st.error(
-                    "We couldn't extract text from this file.\n\n"
-                    "Please try another PDF, DOCX, or TXT file, or paste your resume manually."
-    )
+                    "❌ Unable to read this file.\n\n"
+                    "Please upload a valid PDF, DOCX, or TXT resume."
+                )
                 resume_text = ""
         else:
             resume_text = st.text_area(
