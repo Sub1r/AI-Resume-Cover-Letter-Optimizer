@@ -4,25 +4,32 @@ from report_generator import generate_pdf_report
 
 def display_tags(items, limit=15):
     """
-    Display keywords as visual badges.
+    Display keywords as visual badges with an expandable section
+    when the list exceeds the display limit.
     """
     if not items:
-        return "No keywords found."
+        st.info("No keywords found.")
+        return
 
+    # Display the first set of keywords
     visible = items[:limit]
-    tags = " ".join(f"`{item}`" for item in visible)
+    st.markdown(" ".join(f"`{item}`" for item in visible))
 
+    # Display all keywords inside an expander if there are more
     if len(items) > limit:
-        tags += f" ... (+{len(items) - limit} more)"
+        with st.expander(f"View all {len(items)} keywords"):
+            st.markdown(" ".join(f"`{item}`" for item in items))
 
-    return tags
 
 def display_section(title, content, icon="📌", expanded=True):
     """
     Display a reusable analysis section.
     """
     with st.expander(f"{icon} {title}", expanded=expanded):
-        st.markdown(content if content else "No information available.")
+        if content:
+            st.markdown(content)
+        else:
+            st.info("No information available.")
 
 
 def display_analysis_dashboard(
@@ -80,10 +87,10 @@ Different companies use different ATS software, and many also evaluate factors s
         with st.container(border=True):
 
             st.write("### ✅ Matching Skills & Keywords")
-            st.markdown(display_tags(matched_keywords))
+            display_tags(matched_keywords)
 
             st.write("### ⚠️ Missing Skills & Keywords")
-            st.markdown(display_tags(missing_keywords))
+            display_tags(missing_keywords)
 
     st.divider()
 
