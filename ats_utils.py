@@ -261,27 +261,108 @@ def extract_items_from_line(line: str) -> set[str]:
 
     return results
 
+def detect_section_header(
+    line: str,
+    section_headers: dict[str, str],
+) -> str | None:
+    """
+    Detect whether a line is a known section header.
+
+    Returns the normalized section name (e.g. "skills",
+    "required", "preferred") or None.
+    """
+
+    normalized = normalize_text(line)
+
+    # Remove common markdown prefixes
+    normalized = normalized.lstrip("#").strip()
+
+    # Remove trailing colon
+    normalized = normalized.rstrip(":").strip()
+
+    return section_headers.get(normalized)
+
 def parse_resume(resume_text: str) -> Resume:
     """
-    Parse resume into structured data.
-    Placeholder implementation.
+    Parse a resume into structured sections.
+
+    Currently extracts skills while preserving the
+    architecture for future section parsing.
     """
 
     resume = Resume()
 
-    resume.sections["raw"] = normalize_text(resume_text)
+    current_section = None
+
+    for raw_line in resume_text.splitlines():
+
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        current_section_name = detect_section_header(
+    line,
+    RESUME_SECTION_HEADERS,
+)
+
+        if current_section_name:
+            current_section = current_section_name
+            continue
+
+        if current_section == "skills":
+
+            items = extract_items_from_line(line)
+
+            resume.skills.update(items)
+
+        resume.sections.setdefault(current_section or "raw", "")
+        resume.sections[current_section or "raw"] += line + "\n"
 
     return resume
 
 def parse_job_description(job_description: str) -> JobDescription:
     """
-    Parse job description into structured data.
-    Placeholder implementation.
+    Parse a job description into structured sections.
+
+    The parser reads the document line by line, detects section
+    headers, and extracts information into a structured
+    JobDescription object.
     """
 
     jd = JobDescription()
 
-    jd.required_skills = extract_items_from_line(job_description)
+    current_section = None
+
+    for raw_line in job_description.splitlines():
+
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        current_section_name = detect_section_header(
+    line,
+    SECTION_HEADERS,
+)
+
+        if current_section_name:
+            current_section = current_section_name
+            continue
+
+        items = extract_items_from_line(line)
+
+        if not items:
+            continue
+
+        if current_section == "required":
+            jd.required_skills.update(items)
+
+        elif current_section == "preferred":
+            jd.preferred_skills.update(items)
+
+        elif current_section == "responsibilities":
+            jd.responsibilities.update(items)
 
     return jd
 
