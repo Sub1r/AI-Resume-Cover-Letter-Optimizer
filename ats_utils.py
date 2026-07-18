@@ -209,10 +209,12 @@ def normalize_delimiters(text: str) -> str:
     """
 
     separators = [
-        ";",
-        "|",
-        "/",
-    ]
+    ";",
+    "|",
+    "/",
+    "•",
+    "·",
+]
 
     for sep in separators:
         text = text.replace(sep, ",")
@@ -242,16 +244,28 @@ def clean_item(item: str) -> str:
 
     return " ".join(words)
 
+def tokenize_line(line: str) -> list[str]:
+    """
+    Split a line into raw tokens using the supported delimiters.
+
+    This function does NOT clean or normalize the tokens.
+    It only separates them.
+    """
+
+    normalized = normalize_delimiters(line)
+
+    return [
+        token.strip()
+        for token in normalized.split(",")
+        if token.strip()
+    ]
+
 def extract_items_from_line(line: str) -> set[str]:
     """
     Extract individual skills from one JD line.
     """
 
-    line = normalize_text(line)
-
-    line = normalize_delimiters(line)
-
-    parts = line.split(",")
+    parts = tokenize_line(line)
 
     results = set()
 
