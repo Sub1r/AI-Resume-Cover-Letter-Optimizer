@@ -109,6 +109,26 @@ CONNECTOR_WORDS = {
     "using",
 }
 
+CATEGORY_LABELS = {
+    "languages",
+    "language",
+    "frameworks",
+    "framework",
+    "libraries",
+    "library",
+    "tools",
+    "tool",
+    "cloud",
+    "database",
+    "databases",
+    "technologies",
+    "technology",
+    "platforms",
+    "platform",
+    "operating systems",
+    "operating system",
+}
+
 # ============================================================
 # DATA CLASSES
 # ============================================================
@@ -242,7 +262,12 @@ def clean_item(item: str) -> str:
 
         words.append(word)
 
-    return " ".join(words)
+    cleaned = " ".join(words)
+
+    if cleaned in CATEGORY_LABELS:
+        return ""
+
+    return cleaned
 
 def tokenize_line(line: str) -> list[str]:
     """
