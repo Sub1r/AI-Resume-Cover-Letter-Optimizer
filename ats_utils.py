@@ -224,6 +224,11 @@ def normalize_delimiters(text: str) -> str:
 
 def clean_item(item: str) -> str:
 
+    item = item.strip()
+
+    # Remove common bullet characters
+    item = re.sub(r"^[•\-\*]+\s*", "", item)
+
     item = normalize_text(item)
 
     words = []
