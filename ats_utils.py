@@ -52,13 +52,25 @@ SECTION_HEADERS = {
 
     "required qualifications": "required",
 
+    "required skills": "required",
+
+    "technical skills": "required",
+
+    "mandatory skills": "required",
+
+    "essential skills": "required",
+
     "qualifications": "required",
 
     "skills": "required",
 
     "preferred": "preferred",
 
+    "preferred skills": "preferred",
+
     "preferred qualifications": "preferred",
+    
+    "desired skills": "preferred",
 
     "nice to have": "preferred",
 
@@ -118,6 +130,7 @@ CATEGORY_LABELS = {
     "library",
     "tools",
     "tool",
+    "developer tools",
     "cloud",
     "database",
     "databases",
@@ -156,6 +169,7 @@ class JobDescription:
 @dataclass
 class Resume:
     skills: set[str] = field(default_factory=set)
+    skill_categories: dict[str, set[str]] = field(default_factory=dict)
     sections: dict[str, str] = field(default_factory=dict)
 
 # ============================================================
