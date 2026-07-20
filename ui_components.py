@@ -2,6 +2,58 @@ import streamlit as st
 from report_generator import generate_pdf_report
 
 
+def display_category_matches(category_matches):
+    """
+    Display skill category analysis.
+
+    Parameters
+    ----------
+    category_matches : list[CategoryMatch]
+    """
+
+    if not category_matches:
+        return
+
+    st.subheader("📂 Skill Category Analysis")
+
+    for category in category_matches.values():
+
+        with st.expander(
+            f"{category.category.title()} ({category.score:.0f}% Match)",
+            expanded=False
+        ):
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("### ✅ Matched")
+
+                if category.matched:
+                    for skill in sorted(category.matched):
+                        st.success(skill)
+                else:
+                    st.caption("None")
+
+            with col2:
+                st.markdown("### ❌ Missing")
+
+                if category.missing:
+                    for skill in sorted(category.missing):
+                        st.error(skill)
+                else:
+                    st.caption("None")
+
+            progress = max(0.0, min(category.score / 100, 1.0))
+            st.progress(progress)
+
+            total_required = len(category.matched) + len(category.missing)
+
+            st.caption(
+                f"{len(category.matched)} of "
+                f"{total_required} skills matched"
+            )
+
+
 def display_tags(items, limit=15):
     """
     Display keywords as visual badges with an expandable section
@@ -37,7 +89,8 @@ def display_analysis_dashboard(
     matched_keywords,
     missing_keywords,
     sections,
-    ai_response
+    ai_response,
+    category_matches=None
 ):
     st.divider()
 
@@ -91,6 +144,14 @@ Different companies use different ATS software, and many also evaluate factors s
 
             st.write("### ⚠️ Missing Skills & Keywords")
             display_tags(missing_keywords)
+
+    st.divider()
+
+    # ==========================
+    # Skill Category Analysis
+    # ==========================
+
+    display_category_matches(category_matches)
 
     st.divider()
 

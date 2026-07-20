@@ -1,7 +1,7 @@
 import streamlit as st
 from prompts import build_resume_analysis_prompt
 from ai_client import get_ai_response
-from ats_utils import calculate_match_score
+from ats_utils import analyze_resume
 from file_handler import extract_text_from_file
 from response_parser import parse_ai_response
 from ui_components import display_analysis_dashboard
@@ -193,7 +193,7 @@ if analyze_button:
     if not resume_text.strip() or not job_description.strip():
         st.warning("Please paste both your resume and the job description.")
     else:
-        ats_score, matched_keywords, missing_keywords = calculate_match_score(
+        ats_result = analyze_resume(
             resume_text,
             job_description
         )
@@ -221,9 +221,10 @@ if analyze_button:
                 st.stop()
 
         display_analysis_dashboard(
-            ats_score,
-            matched_keywords,
-            missing_keywords,
+            ats_result.ats_score,
+            ats_result.matched_skills,
+            ats_result.missing_skills,
             sections,
-            ai_response
+            ai_response,
+            category_matches=ats_result.category_matches,
         )
