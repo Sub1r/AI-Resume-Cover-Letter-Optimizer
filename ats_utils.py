@@ -151,7 +151,7 @@ class SkillMatch:
     matched: set[str] = field(default_factory=set)
     missing: set[str] = field(default_factory=set)
     score: float = 0.0
-    
+
 @dataclass
 class CategoryMatch:
     category: str
@@ -554,6 +554,37 @@ def match_skills(resume_skills, required_skills):
         missing=missing,
         score=0.0
     )
+
+def match_skill_categories(
+    resume_categories: dict[str, set[str]],
+    job_categories: dict[str, set[str]],
+) -> dict[str, CategoryMatch]:
+    """
+    Match resume skills against job skills by category.
+    """
+
+    matches: dict[str, CategoryMatch] = {}
+
+    for category, required_skills in job_categories.items():
+
+        candidate_skills = resume_categories.get(category, set())
+
+        matched = candidate_skills & required_skills
+        missing = required_skills - candidate_skills
+
+        if required_skills:
+            score = (len(matched) / len(required_skills)) * 100
+        else:
+            score = 100.0
+
+        matches[category] = CategoryMatch(
+            category=category,
+            matched=matched,
+            missing=missing,
+            score=round(score, 1),
+        )
+
+    return matches
 
 
 # ============================================================
