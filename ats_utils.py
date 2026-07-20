@@ -164,6 +164,10 @@ class ATSResult:
 class JobDescription:
     required_skills: set[str] = field(default_factory=set)
     preferred_skills: set[str] = field(default_factory=set)
+
+    required_skill_categories: dict[str, set[str]] = field(default_factory=dict)
+    preferred_skill_categories: dict[str, set[str]] = field(default_factory=dict)
+
     responsibilities: set[str] = field(default_factory=set)
 
 @dataclass
@@ -446,6 +450,7 @@ def parse_job_description(job_description: str) -> JobDescription:
     jd = JobDescription()
 
     current_section = None
+    current_skill_category = None
 
     for raw_line in job_description.splitlines():
 
@@ -461,6 +466,18 @@ def parse_job_description(job_description: str) -> JobDescription:
 
         if current_section_name:
             current_section = current_section_name
+
+            # Reset the current skill category whenever we
+            # enter a new JD section.
+            current_skill_category = None
+
+            continue
+
+        if (
+            current_section in {"required", "preferred"}
+            and normalize_text(line) in CATEGORY_LABELS
+        ):
+            current_skill_category = normalize_text(line)
             continue
 
         items = extract_items_from_line(line)
@@ -469,10 +486,46 @@ def parse_job_description(job_description: str) -> JobDescription:
             continue
 
         if current_section == "required":
+
+            # Maintain backward compatibility
             jd.required_skills.update(items)
 
+            # Support inline categories (e.g. "Languages: Python, Java")
+            categorized = extract_skill_categories(line)
+
+            for category, skills in categorized.items():
+                jd.required_skill_categories.setdefault(
+                    category,
+                    set()
+                ).update(skills)
+
+            # Support multi-line categories
+            if current_skill_category and items:
+                jd.required_skill_categories.setdefault(
+                    current_skill_category,
+                    set()
+                ).update(items)
+
         elif current_section == "preferred":
+
+            # Maintain backward compatibility
             jd.preferred_skills.update(items)
+
+            # Support inline categories
+            categorized = extract_skill_categories(line)
+
+            for category, skills in categorized.items():
+                jd.preferred_skill_categories.setdefault(
+                    category,
+                    set()
+                ).update(skills)
+
+            # Support multi-line categories
+            if current_skill_category and items:
+                jd.preferred_skill_categories.setdefault(
+                    current_skill_category,
+                    set()
+                ).update(items)
 
         elif current_section == "responsibilities":
             jd.responsibilities.update(items)
