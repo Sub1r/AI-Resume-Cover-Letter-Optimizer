@@ -628,6 +628,11 @@ def analyze_resume(resume_text: str, job_description: str):
         job.required_skills,
     )
 
+    category_matches = match_skill_categories(
+        resume.skill_categories,
+        job.required_skill_categories,
+    )
+
     section_scores = {
         "skills": score_skills(skill_match)
     }
@@ -641,6 +646,8 @@ def analyze_resume(resume_text: str, job_description: str):
     result.missing_skills = sorted(skill_match.missing)
 
     result.section_scores = section_scores
+
+    result.category_matches = category_matches
 
     return result
 
