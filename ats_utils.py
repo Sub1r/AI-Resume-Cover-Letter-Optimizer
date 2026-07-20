@@ -166,6 +166,7 @@ class ATSResult:
     matched_skills: list[str] = field(default_factory=list)
     missing_skills: list[str] = field(default_factory=list)
     section_scores: dict[str, int] = field(default_factory=dict)
+    category_matches: dict[str, CategoryMatch] = field(default_factory=dict)
 
 @dataclass
 class JobDescription:
