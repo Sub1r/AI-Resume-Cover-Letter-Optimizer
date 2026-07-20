@@ -340,6 +340,34 @@ def detect_section_header(
 
     return section_headers.get(normalized)
 
+def extract_skill_categories(line: str) -> dict[str, set[str]]:
+    """
+    Extract categorized skills from a resume line.
+
+    Example:
+        Languages: Python, Java
+        Frameworks: FastAPI, Django
+    """
+
+    results: dict[str, set[str]] = {}
+
+    if ":" not in line:
+        return results
+
+    category_text, skills_text = line.split(":", 1)
+
+    category = normalize_text(category_text)
+
+    if category not in CATEGORY_LABELS:
+        return results
+
+    skills = extract_items_from_line(skills_text)
+
+    if skills:
+        results[category] = skills
+
+    return results
+
 def parse_resume(resume_text: str) -> Resume:
     """
     Parse a resume into structured sections.
@@ -370,12 +398,18 @@ def parse_resume(resume_text: str) -> Resume:
 
         if current_section == "skills":
 
+            # Keep the existing flat skill set for backward compatibility
             items = extract_items_from_line(line)
-
             resume.skills.update(items)
 
-        resume.sections.setdefault(current_section or "raw", "")
-        resume.sections[current_section or "raw"] += line + "\n"
+            # Populate categorized skills when the line has a category label
+            categorized = extract_skill_categories(line)
+
+            for category, skills in categorized.items():
+                resume.skill_categories.setdefault(category, set()).update(skills)
+
+                resume.sections.setdefault(current_section or "raw", "")
+                resume.sections[current_section or "raw"] += line + "\n"
 
     return resume
 
