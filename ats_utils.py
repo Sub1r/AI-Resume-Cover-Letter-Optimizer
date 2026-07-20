@@ -379,6 +379,7 @@ def parse_resume(resume_text: str) -> Resume:
     resume = Resume()
 
     current_section = None
+    current_skill_category = None
 
     for raw_line in resume_text.splitlines():
 
@@ -394,19 +395,39 @@ def parse_resume(resume_text: str) -> Resume:
 
         if current_section_name:
             current_section = current_section_name
+
+            # Reset the current skill category whenever we enter
+            # a new resume section.
+            current_skill_category = None
+
+            continue
+
+        if (
+            current_section == "skills"
+            and normalize_text(line) in CATEGORY_LABELS
+        ):
+            current_skill_category = normalize_text(line)
             continue
 
         if current_section == "skills":
 
-            # Keep the existing flat skill set for backward compatibility
             items = extract_items_from_line(line)
+
+            # Always maintain the flat skill set
             resume.skills.update(items)
 
-            # Populate categorized skills when the line has a category label
+            # Support the existing "Category: skill1, skill2" format
             categorized = extract_skill_categories(line)
 
             for category, skills in categorized.items():
                 resume.skill_categories.setdefault(category, set()).update(skills)
+
+            # Support multi-line category layouts
+            if current_skill_category and items:
+                resume.skill_categories.setdefault(
+                    current_skill_category,
+                    set()
+                ).update(items)
 
                 resume.sections.setdefault(current_section or "raw", "")
                 resume.sections[current_section or "raw"] += line + "\n"
