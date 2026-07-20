@@ -151,6 +151,13 @@ class SkillMatch:
     matched: set[str] = field(default_factory=set)
     missing: set[str] = field(default_factory=set)
     score: float = 0.0
+    
+@dataclass
+class CategoryMatch:
+    category: str
+    matched: set[str] = field(default_factory=set)
+    missing: set[str] = field(default_factory=set)
+    score: float = 0.0
 
 @dataclass
 class ATSResult:
