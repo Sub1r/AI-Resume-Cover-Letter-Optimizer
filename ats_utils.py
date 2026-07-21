@@ -1,4 +1,5 @@
 import re
+from ats.constants import SYNONYM_MAP
 from dataclasses import dataclass, field
 from typing import Set
 from ats.models import (
@@ -7,6 +8,13 @@ from ats.models import (
     JobDescription,
     Resume,
     SkillMatch,
+)
+from ats.normalization import (
+    normalize_text,
+    normalize_unicode,
+    normalize_separators,
+    apply_synonyms,
+    collapse_whitespace,
 )
 
 # ============================================================
@@ -21,36 +29,6 @@ SCORE_WEIGHTS = {
     "certifications": 5,
     "soft_skills": 10,
     "formatting": 5,
-}
-
-SYNONYM_MAP = {
-
-    # Cloud
-    "amazon web services": "aws",
-    "amazon aws": "aws",
-
-    # DevOps
-    "continuous integration": "ci/cd",
-    "continuous deployment": "ci/cd",
-    "continuous delivery": "ci/cd",
-
-    "github-actions": "github actions",
-
-    # Programming
-    "javascript": "javascript",
-    "js": "javascript",
-
-    "typescript": "typescript",
-    "ts": "typescript",
-
-    # AI
-    "large language models": "llm",
-
-    # Databases
-    "postgres": "postgresql",
-
-    # Common formatting
-    "ci cd": "ci/cd",
 }
 
 SECTION_HEADERS = {
@@ -154,7 +132,7 @@ CATEGORY_LABELS = {
 # TEXT NORMALIZATION
 # ============================================================
 
-def normalize_text(text: str) -> str:
+def _old_normalize_text(text: str) -> str:
 
     if not text:
         return ""
@@ -171,7 +149,7 @@ def normalize_text(text: str) -> str:
 
     return text
 
-def normalize_unicode(text: str) -> str:
+def _old_normalize_unicode(text: str) -> str:
 
     return (
         text.replace("–", "-")
@@ -181,7 +159,7 @@ def normalize_unicode(text: str) -> str:
             .replace("”", '"')
     )
 
-def normalize_separators(text: str) -> str:
+def _old_normalize_separators(text: str) -> str:
 
     text = re.sub(r"[_\-]+", " ", text)
 
@@ -193,7 +171,7 @@ def normalize_separators(text: str) -> str:
 
     return text
 
-def apply_synonyms(text: str) -> str:
+def _old_apply_synonyms(text: str) -> str:
 
     for old, new in SYNONYM_MAP.items():
 
@@ -203,7 +181,7 @@ def apply_synonyms(text: str) -> str:
 
     return text
 
-def collapse_whitespace(text: str) -> str:
+def _old_collapse_whitespace(text: str) -> str:
 
     return re.sub(
         r"\s+",
